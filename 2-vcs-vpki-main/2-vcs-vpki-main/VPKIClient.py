@@ -1,8 +1,8 @@
+import sys
 import interfaces_pb2
 import requests
 import json
-from interfaces_pb2 import PseudonymRequest
-import nss_vpki_pb2
+
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import rsa, padding
 from cryptography.exceptions import InvalidSignature
