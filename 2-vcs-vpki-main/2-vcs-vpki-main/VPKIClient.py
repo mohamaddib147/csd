@@ -30,8 +30,6 @@ class VPKIClient:
             with open(self.client_key_path, 'rb') as key_file:
                 client_key = key_file.read()
            
-            
-            
             # Create the pseudonym request
             pseudonym_request = msgPsnymCertReq_V2PCA()
             pseudonym_request.iReqType = -1  
@@ -43,13 +41,16 @@ class VPKIClient:
             pseudonym_request.iTicketSize = 0 
             pseudonym_request.iNonce = 0  
             pseudonym_request.tTimeStamp = int(time.time())  
+            pseudonym_request.unsignedC
             
+          
              # Create an empty PsnymCertRequest message
             psnym_cert_req = pseudonym_request.pstPsnymCertReq.add()
+            psnym_cert_req.unsignedCsr = client_cert
 
             # Use the builder method to set the unsignedCsr field (replace 'your_unsigned_csr_data' with actual CSR data)
-            psnym_cert_req.client_cert = client_cert
-
+            #psnym_cert_req.client_cert = client_cert
+         
             # Sign the request
             signature = self.sign_request(pseudonym_request.SerializeToString(), client_key)
             pseudonym_request.stSign.signature = signature
@@ -86,14 +87,15 @@ if __name__ == "__main__":
     pca_method = "pca.operate"
 
     # Update the client_cert_path and client_key_path variables to match the paths to your client certificate and key files.
-    client_cert_path = "/home/kali/Desktop/CSD/2-vcs-vpki-main/client_csr.pem"
-    client_key_path = "/home/kali/Desktop/CSD/2-vcs-vpki-main/client_private_key.key"
+    client_cert_path = "/home/kali/Desktop/CSD/2-vcs-vpki-main/psnym.crt"
+    client_key_path = "/home/kali/Desktop/CSD/2-vcs-vpki-main/psnym.key"
 
     vpkiclient = VPKIClient(pca_url, client_cert_path, client_key_path, validate_certificate=False)
 
 
     try:
         pseudonym = vpkiclient.obtain_pseudonym()
+       
         print(f"Obtained pseudonym: {pseudonym}")
     except Exception as e:
-        print(f"Error: {str(e)}")
+        print(f"Error: {str(e)}") 
