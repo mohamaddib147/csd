@@ -38,6 +38,33 @@ class VPKIClient:
             return response_message
         else:
             raise Exception(f"Error: {response.status_code} - {response.text}")
+    def validate_nonce_and_timestamp(self, nonce, timestamp):
+        """Validates the nonce and timestamp.
+
+        Args:
+            nonce: The nonce.
+            timestamp: The timestamp.
+
+        Raises:
+            Exception: If the nonce or timestamp is invalid.
+        """
+
+        if not isinstance(nonce, int) or not isinstance(timestamp, int):
+            raise Exception("Invalid nonce or timestamp type")
+
+        if nonce < 0 or nonce > 65535:
+            raise Exception("Invalid nonce value")
+
+        # Check that the nonce is unique for the given timestamp.
+
+        # Check that the timestamp is within a reasonable range of the current time.
+
+        current_time = int(time.time())
+        max_time_delta = 60 * 60  # 60 minutes
+
+        if timestamp < current_time - max_time_delta or timestamp > current_time + max_time_delta:
+            raise Exception("Invalid timestamp value")
+
 
 
     def obtain_ltca(self):
@@ -57,6 +84,7 @@ class VPKIClient:
             ltca_request.strX509CertReq = csr_data  # Include the CSR data
             ltca_request.iNonce = random.randint(0, 65535)
             ltca_request.tTimeStamp = int(time.time())
+            self.validate_nonce_and_timestamp(ltca_request.iNonce, ltca_request.tTimeStamp)
             print("LTCA Request Data:")
             print(ltca_request.SerializeToString())
             
@@ -93,7 +121,7 @@ class VPKIClient:
             ticket_request.iNonce = random.randint(0, 65535)  
             ticket_request.tTimeStamp = int(time.time())  
             ticket_request.strX509Cert = ltca_certificate  
-
+            self.validate_nonce_and_timestamp(ticket_request.iNonce, ticket_request.tTimeStamp)
             # Serialize the ticket request to a string
             ticket_request_string = ticket_request.SerializeToString()
 
@@ -120,7 +148,7 @@ class VPKIClient:
             pseudonym_request.uiPsnymCertNo = 0  
             pseudonym_request.iNonce = random.randint(0, 65535)  # Generate a random nonce
             pseudonym_request.tTimeStamp = int(time.time())  # Set to the current system time
-
+            self.validate_nonce_and_timestamp(pseudonym_request.iNonce, pseudonym_request.tTimeStamp)
             # Serialize the pseudonym request to a string
             pseudonym_request_string = pseudonym_request.SerializeToString()
 
@@ -157,4 +185,4 @@ if __name__ == "__main__":
         print(f"Obtained Pseudonym Certificate: {pseudonym_certificate}")
     except Exception as e:
         print(f"Error: {str(e)}")
-#validate the nonce and the time stamp
+
