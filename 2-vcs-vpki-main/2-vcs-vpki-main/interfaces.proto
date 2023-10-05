@@ -1,3 +1,4 @@
+syntax = "proto2";
 package interfaces;
 
 option java_package = "its.service.interfaces";
