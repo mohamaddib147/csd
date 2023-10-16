@@ -120,8 +120,7 @@ class VPKIClient:
             ltca_request.strKeyUsage = ""
             ltca_request.strExtendedKeyUsage = "clientAuth"
             ltca_request.strX509CertReq = x509_cert_req  # Include the CSR data
-            ltca_request.iNonce = random.randint(0, 65535)
-            ltca_request.tTimeStamp = int(time.time())
+)
             ltca_request_string = ltca_request.SerializeToString()
             # Connect to the LTCA server using XML-RPC
             ltca_server = xmlrpc.client.ServerProxy(self.ltca_url)
